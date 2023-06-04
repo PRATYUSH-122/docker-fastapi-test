@@ -1,0 +1,11 @@
+services:
+  app:
+    build:
+        context: .
+        dockerfile: Dockerfile
+    container_name: python-server
+    image: docker-fastapi-test:latest
+    ports:
+      - 8000:8000
+    volumes:
+      - .:/local
