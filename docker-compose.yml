@@ -7,5 +7,10 @@ services:
     image: docker-fastapi-test:latest
     ports:
       - 8000:8000
-    volumes:
-      - .:/local
+     volumes:
+      - data:/app
+      
+volumes:
+  data:
+    external: true
+    name: shared-data
