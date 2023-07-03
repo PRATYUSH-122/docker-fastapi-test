@@ -49,7 +49,7 @@ pipeline {
             steps {
                 sshagent(['public-ip-address']) {
                     sh 'ssh ec2-user@p-i-a "docker  build -t docker-fastapi-test:latest ."'
-                    sh 'ssh ec2-user@p-i-a "docker run -it -d -v shared-data:/app -p 8000:8000 --name python-server docker-fastapi-test:latest"'
+                    sh 'ssh ec2-user@p-i-a "docker run -it -d -v shared-data:/app -p 8000:8000 --name python-server-new docker-fastapi-test:latest"'
                     sh 'ssh ec2-user@p-i-a "docker stop docker-fastapi-test:latest || true"'
                     sh 'ssh ec2-user@p-i-a "docker rm  docker-fastapi-test:latest || true"'
                 }
