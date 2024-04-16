@@ -19,8 +19,8 @@ jobs:
     - name: Build Docker image
       run: docker build -t my-fastapi-app .
 
-  #  - name: Test Docker image
-   #   run: docker run --rm my-fastapi-app pytest tests/
+    - name: Test Docker image
+      run: docker run --rm my-fastapi-app pytest tests/
 
   deploy:
     needs: build
@@ -37,7 +37,7 @@ jobs:
         context: .
         file: ./Dockerfile
         push: true
-        tags: myusername/my-fastapi-app:latest
+        tags: pratyusshrivastav/my-fastapi-app:latest
       env:
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
