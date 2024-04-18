@@ -25,13 +25,15 @@ jobs:
       - name: Push Docker Image to Docker Hub
         run: docker push pratyusshrivastav/dockerfastapi-application:v2   
 
-  deploy: 
-    needs: build
-    runs-on: aws-ec2    
-    steps:
-      - name: Pull image from docker hub
-        run: docker pull pratyusshrivastav/dockerfastapi-application:v2
-      - name: Delete Old Container
-        run: docker rm -f reactContainer
-      - name: Run docker container
-        run: docker run -d -p 8000:8000 --name reactContainer pratyusshrivastav/dockerfastapi-application   
+      - name: SSH into EC2 Instance and Deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_PRIVATE_KEY }}
+          port: ${{ secrets.EC2_PORT }}
+          script: |
+            docker pull pratyusshrivastav/dockerfastapi-application:v2
+            #docker stop your-container-name || true
+            #docker rm your-container-name || true
+            docker run -d --name your-container-name -p 8000:8000 pratyusshrivastav/dockerfastapi-application:v2
