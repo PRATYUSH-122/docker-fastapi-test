@@ -27,4 +27,4 @@ jobs:
       - name: Delete Old Container
         run: docker rm -f reactContainer
       - name: Run docker container
-        run: docker run -d -p 8000:8000 --name reactContainer pratyusshrivastav/dockerfastapi-application   
+        run: docker run -d -p 8000:8000 --name reactContainer pratyusshrivastav/dockerfastapi-application:v1  
