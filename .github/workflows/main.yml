@@ -13,16 +13,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set up SSH key
-        uses: webfactory/ssh-agent@v0.5.3
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-      - name: Connect to EC2 instance
-        run: ssh -o StrictHostKeyChecking=no -i ${{ secrets.SSH_PRIVATE_KEY }} ec2-user@34.210.46.2
+      - name: Login to Docker Hub
+        run: echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login --username "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
       - name: Pull Docker image
         run: docker pull pratyusshrivastav/dockerfastapi-application:latest
 
-      - name: Run Docker container
-        run: docker run -d -p 80:3000 pratyusshrivastav/dockerfastapi-application:latest
+      - name: SSH into EC2 and run deployment script
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            docker stop mycontainer-1 || true
+            docker rm mycontainer-1 || true
+            docker run -d --name mycontainer-1 -p 8000:8000 pratyusshrivastav/dockerfastapi-application:latest
