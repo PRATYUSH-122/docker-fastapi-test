@@ -1,32 +1,30 @@
-name: Deploy to EC2
+name: CICD
 
 on:
   push:
     branches:
-      - main
+      - deploy-to-ec2
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - name: Checkout Source
+        uses: actions/checkout@v3
+      - name: Login to Docker Hub
+        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+      - name: Build Docker Image
+        run: docker build -t pratyusshrivastav/dockerfastapi-application .
+      - name: Publish image to docker hub
+        run: docker push pratyusshrivastav/dockerfastapi-application:v1   
 
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-          
-      - name: Pull Docker image
-        run: docker pull pratyusshrivastav/dockerfastapi-application:latest
-
-      - name: SSH into EC2 and run deployment script
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            docker run -d --name mycontainer-1 -p 8000:8000 pratyusshrivastav/dockerfastapi-application:latest
+  deploy: 
+    needs: build
+    runs-on: aws-ec2    
+    steps:
+      - name: Pull image from docker hub
+        run: docker pull pratyusshrivastav/dockerfastapi-application:v1 
+      - name: Delete Old Container
+        run: docker rm -f reactContainer
+      - name: Run docker container
+        run: docker run -d -p 8000:8000 --name reactContainer pratyusshrivastav/dockerfastapi-application   
