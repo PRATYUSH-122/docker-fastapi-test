@@ -29,6 +29,6 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            docker stop mycontainer-1 || true
-            docker rm mycontainer-1 || true
+            #docker stop mycontainer-1 || true
+            #docker rm mycontainer-1 || true
             docker run -d --name mycontainer-1 -p 8000:8000 pratyusshrivastav/dockerfastapi-application:latest
