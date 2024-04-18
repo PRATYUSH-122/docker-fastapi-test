@@ -13,19 +13,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Install SSH Client
-        run: sudo apt-get install openssh-client -y
-
-      - name: Load SSH Private Key
-        run: echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa && chmod 600 ~/.ssh/id_rsa
-
-      - name: Connect to EC2
-        uses: appleboy/ssh-action@master
+      - name: Set up SSH key
+        uses: webfactory/ssh-agent@v0.5.3
         with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          port: ${{ secrets.EC2_SSH_PORT }}
-          script: |
-            docker pull pratyusshrivastav/dockerfastapi-application:latest
-            docker run -d -p 80:3000 pratyusshrivastav/dockerfastapi-appication:latest
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Connect to EC2 instance
+        run: ssh -o StrictHostKeyChecking=no -i ${{ secrets.SSH_PRIVATE_KEY }} ec2-user@34.210.46.2
+
+      - name: Pull Docker image
+        run: docker pull pratyusshrivastav/dockerfastapi-application:latest
+
+      - name: Run Docker container
+        run: docker run -d -p 80:3000 pratyusshrivastav/dockerfastapi-application:latest
