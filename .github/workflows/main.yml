@@ -16,6 +16,10 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
+      - name: Save state
+        run: echo "{name}={value}" >> $GITHUB_STATE
+      - name: Set output
+        run: echo "{name}={value}" >> $GITHUB_OUTPUT
       - name: Build Docker Image
         run: docker build -t pratyusshrivastav/dockerfastapi-application .
       - name: Publish image to docker hub
